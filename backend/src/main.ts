@@ -3,6 +3,9 @@ import { config } from '@/config/env'
 import { connectDatabase, disconnectDatabase } from '@/config/database'
 import { connectRedis, disconnectRedis } from '@/config/redis'
 import { logger } from '@/common/utils/logger'
+import CrawlerJob from '@/jobs/crawler.job'
+import ProcessorJob from '@/jobs/processor.job'
+import NotificationJob from '@/jobs/notification.job'
 
 async function main(): Promise<void> {
   try {
@@ -26,11 +29,25 @@ async function main(): Promise<void> {
       logger.info(`Environment: ${config.app.env}`)
     })
 
+    // Initialize scheduled jobs
+    logger.info('Initializing scheduled jobs...')
+    CrawlerJob.start()
+    ProcessorJob.start()
+    NotificationJob.start()
+    logger.info('All scheduled jobs started successfully')
+
     // Graceful shutdown
     process.on('SIGTERM', async () => {
       logger.info('SIGTERM signal received: closing HTTP server')
       server.close(async () => {
         logger.info('HTTP server closed')
+
+        // Stop jobs
+        logger.info('Stopping scheduled jobs...')
+        CrawlerJob.stop()
+        ProcessorJob.stop()
+        NotificationJob.stop()
+
         await disconnectDatabase()
         await disconnectRedis()
         process.exit(0)
@@ -41,6 +58,13 @@ async function main(): Promise<void> {
       logger.info('SIGINT signal received: closing HTTP server')
       server.close(async () => {
         logger.info('HTTP server closed')
+
+        // Stop jobs
+        logger.info('Stopping scheduled jobs...')
+        CrawlerJob.stop()
+        ProcessorJob.stop()
+        NotificationJob.stop()
+
         await disconnectDatabase()
         await disconnectRedis()
         process.exit(0)

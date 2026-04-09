@@ -1,22 +1,18 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Header from './components/Header'
-import Footer from './components/Footer'
 import Home from './pages/Home'
 import StockDetail from './pages/StockDetail'
+import Statistics from './pages/Statistics'
+import Subscriptions from './pages/Subscriptions'
 
 function App() {
   return (
     <Router>
-      <div className="flex flex-col min-h-screen bg-gray-50">
-        <Header />
-        <main className="flex-grow container mx-auto px-4 py-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/stock/:symbol" element={<StockDetail />} />
-          </Routes>
-        </main>
-        <Footer />
-      </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/stock/:symbol" element={<StockDetail />} />
+        <Route path="/statistics" element={<Statistics />} />
+        <Route path="/subscriptions" element={<Subscriptions />} />
+      </Routes>
     </Router>
   )
 }

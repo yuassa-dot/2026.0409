@@ -47,8 +47,12 @@ export function createApp(): Express {
     })
   })
 
-  // API Routes (will be added in next phase)
+  // API Routes
   app.use('/api/stocks', require('@/modules/stocks/stocks.routes').default)
+  app.use(
+    '/api/subscriptions',
+    require('@/modules/subscriptions/subscriptions.routes').default
+  )
 
   // 404 handler
   app.use((req: Request, res: Response) => {
